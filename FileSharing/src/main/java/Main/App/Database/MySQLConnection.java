@@ -11,7 +11,7 @@ import java.sql.*;
 public class MySQLConnection {
     private static final String URL = "jdbc:mysql://10.0.1.176:3306/filesharingsystem?zeroDateBehavior=CONVERT_TO_NULL";
     private static final String USER = "root";  
-    private static final String PASS = "your_password_here"; 
+    private static final String PASS = "Nhom14@1234"; 
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASS);
