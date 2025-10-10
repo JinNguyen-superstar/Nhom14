@@ -28,8 +28,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" pref="59" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnLoginRegister" min="-2" pref="168" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -38,9 +37,9 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="txtmapb" min="-2" pref="347" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane2" alignment="0" min="-2" pref="452" max="-2" attributes="0"/>
+                          <Component id="jScrollPane2" min="-2" pref="478" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btnDowload" pref="126" max="32767" attributes="0"/>
                           <Component id="btnUpdate" max="32767" attributes="0"/>
@@ -58,10 +57,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel1" alignment="3" pref="27" max="32767" attributes="0"/>
-                  <Component id="btnLoginRegister" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
+              <Component id="jLabel1" pref="27" max="32767" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -102,7 +98,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnUpdate">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Update File"/>
+        <Property name="text" type="java.lang.String" value="Upload File"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnUpdateActionPerformed"/>
@@ -122,14 +118,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCloseActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btnLoginRegister">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Login/Register"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLoginRegisterActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -157,13 +145,13 @@
         <Component class="javax.swing.JTable" name="txt_list">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="4" rowCount="4">
-                <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                <Column editable="true" title="Title 4" type="java.lang.Object"/>
+              <Table columnCount="3" rowCount="3">
+                <Column editable="true" title="File Name" type="java.lang.String"/>
+                <Column editable="true" title="Department" type="java.lang.String"/>
+                <Column editable="true" title="File Location" type="java.lang.String"/>
               </Table>
             </Property>
+            <Property name="cellSelectionEnabled" type="boolean" value="true"/>
           </Properties>
         </Component>
       </SubComponents>

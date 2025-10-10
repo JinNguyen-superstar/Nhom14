@@ -11,7 +11,8 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import Main.App.controllers.LoginFrame;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import javax.swing.table.TableModel;
 
 /**
@@ -43,7 +44,6 @@ public class Dashboard extends javax.swing.JFrame {
         btnUpdate = new javax.swing.JButton();
         btndelete = new javax.swing.JButton();
         btnClose = new javax.swing.JButton();
-        btnLoginRegister = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         txtmapb = new javax.swing.JTextField();
         btnseek = new javax.swing.JButton();
@@ -61,7 +61,7 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
 
-        btnUpdate.setText("Update File");
+        btnUpdate.setText("Upload File");
         btnUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUpdateActionPerformed(evt);
@@ -82,13 +82,6 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
 
-        btnLoginRegister.setText("Login/Register");
-        btnLoginRegister.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLoginRegisterActionPerformed(evt);
-            }
-        });
-
         jLabel2.setText("Nhập Mã phòng ban: ");
 
         btnseek.setText("Tìm");
@@ -100,15 +93,23 @@ public class Dashboard extends javax.swing.JFrame {
 
         txt_list.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "File Name", "Department", "File Location"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        txt_list.setCellSelectionEnabled(true);
         jScrollPane2.setViewportView(txt_list);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -120,16 +121,15 @@ public class Dashboard extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnLoginRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtmapb, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(28, 28, 28)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnDowload, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
                             .addComponent(btnUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -142,9 +142,7 @@ public class Dashboard extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
-                    .addComponent(btnLoginRegister))
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -166,13 +164,6 @@ public class Dashboard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnLoginRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginRegisterActionPerformed
-        // TODO add your handling code here:
-        btnLoginRegister.addActionListener(e -> {
-    new LoginFrame().setVisible(true);
-});
-    }//GEN-LAST:event_btnLoginRegisterActionPerformed
 
     private void btnDowloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDowloadActionPerformed
     int selectedRow = txt_list.getSelectedRow(); // Lấy dòng được chọn
@@ -257,88 +248,97 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnseekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnseekActionPerformed
-    String keyword = txtmapb.getText().trim(); // Lấy mã phòng ban nhập vào
+    String keyword = txtmapb.getText().trim();
 
-    File uploadDir = new File("uploads");
-    if (!uploadDir.exists()) {
-        JOptionPane.showMessageDialog(this,
-                "Chưa có thư mục uploads!",
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập mã phòng ban cần tìm!",
                 "Thông báo", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    File[] files = uploadDir.listFiles();
-    if (files == null || files.length == 0) {
-        JOptionPane.showMessageDialog(this,
-                "Chưa có file nào để tìm!",
-                "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+    File uploadDir = new File("uploads");
+    File dataFile = new File(uploadDir, "data.txt");
+
+    if (!dataFile.exists()) {
+        JOptionPane.showMessageDialog(this, "Chưa có dữ liệu upload nào!",
+                "Thông báo", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    // Tạo danh sách kết quả (hiển thị tên + kích thước)
-    DefaultListModel<String> model = new DefaultListModel<>();
+    String[] columnNames = {"Tên File", "Kích thước (KB)", "Mã Phòng Ban"};
+    DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 
-    for (File f : files) {
-        // Kiểm tra file có chứa mã phòng ban hay không (không phân biệt hoa thường)
-        if (f.getName().toLowerCase().contains(keyword.toLowerCase())) {
-            model.addElement(f.getName() + " (" + (f.length() / 1024) + " KB)");
+    try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] parts = line.split(",", 2);
+            if (parts.length == 2) {
+                String maPB = parts[0];
+                String fileName = parts[1];
+                if (maPB.equalsIgnoreCase(keyword)) {
+                    File f = new File(uploadDir, fileName);
+                    if (f.exists()) {
+                        model.addRow(new Object[]{fileName, (f.length() / 1024) + " KB", maPB});
+                    }
+                }
+            }
         }
+    } catch (IOException e) {
+        e.printStackTrace();
     }
 
-    // Nếu không có kết quả
-    if (model.isEmpty()) {
+    if (model.getRowCount() == 0) {
         JOptionPane.showMessageDialog(this,
-                "Không tìm thấy file nào chứa mã: " + keyword,
-                "Kết quả", JOptionPane.INFORMATION_MESSAGE);
-        model.clear(); // Làm trống danh sách
+                "Không tìm thấy file nào thuộc mã phòng ban: " + keyword,
+                "Kết quả tìm kiếm", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Gán model mới cho JList
-    txt_list.setModel((TableModel) model);
+    // Cập nhật lại bảng hiển thị
+    txt_list.setModel(model);
     }//GEN-LAST:event_btnseekActionPerformed
 
     private void btndeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeleteActionPerformed
-         int selectedRow = txt_list.getSelectedRow();
+        int selectedRow = txt_list.getSelectedRow();
 
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn file cần xóa!");
-        return;
-    }
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn file cần xóa!");
+            return;
+        }
 
-    Object fileObj = txt_list.getValueAt(selectedRow, 2);
-    if (fileObj == null) {
-        JOptionPane.showMessageDialog(this, "Không tìm thấy đường dẫn file để xóa!");
-        return;
-    }
+        Object fileObj = txt_list.getValueAt(selectedRow, 2);
+        if (fileObj == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy đường dẫn file để xóa!");
+            return;
+        }
 
-    String filePath = fileObj.toString();
-    File fileToDelete = new File(filePath);
+        String filePath = fileObj.toString();
+        File fileToDelete = new File(filePath);
 
-    int confirm = JOptionPane.showConfirmDialog(this,
+        int confirm = JOptionPane.showConfirmDialog(this,
             "Bạn có chắc muốn xóa file này?\n" + filePath,
             "Xác nhận xóa",
             JOptionPane.YES_NO_OPTION);
 
-    if (confirm == JOptionPane.YES_OPTION) {
-        if (fileToDelete.exists()) {
-            if (fileToDelete.delete()) {
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (fileToDelete.exists()) {
+                if (fileToDelete.delete()) {
+                    DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
+                    model.removeRow(selectedRow);
+                    JOptionPane.showMessageDialog(this, "Đã xóa file thành công!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không thể xóa file! Có thể file đang mở hoặc bị khóa.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "File không tồn tại, chỉ xóa khỏi danh sách!");
                 DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
                 model.removeRow(selectedRow);
-                JOptionPane.showMessageDialog(this, "Đã xóa file thành công!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Không thể xóa file! Có thể file đang mở hoặc bị khóa.");
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "File không tồn tại, chỉ xóa khỏi danh sách!");
-            DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
-            model.removeRow(selectedRow);
         }
-    }
     }//GEN-LAST:event_btndeleteActionPerformed
 
     private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
         // TODO add your handling code here:
-         System.exit(0);
+        System.exit(0);
     }//GEN-LAST:event_btnCloseActionPerformed
 
     /**
@@ -369,7 +369,6 @@ public class Dashboard extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClose;
     private javax.swing.JButton btnDowload;
-    private javax.swing.JButton btnLoginRegister;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btndelete;
     private javax.swing.JButton btnseek;
