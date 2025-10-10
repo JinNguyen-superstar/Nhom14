@@ -8,7 +8,7 @@ import Main.Form.Dashboard;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
+import java.sql.*;
 
 public class LoginForm extends JFrame {
     private JTextField txtUsername;
@@ -25,35 +25,27 @@ public class LoginForm extends JFrame {
     }
 
     private void initComponents() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel lblTitle = new JLabel("ĐĂNG NHẬP HỆ THỐNG", JLabel.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         panel.add(lblTitle, gbc);
 
-        gbc.gridwidth = 1;
-        gbc.gridy++;
+        gbc.gridwidth = 1; gbc.gridy++;
         panel.add(new JLabel("Tên đăng nhập:"), gbc);
         txtUsername = new JTextField();
-        gbc.gridx = 1;
-        panel.add(txtUsername, gbc);
+        gbc.gridx = 1; panel.add(txtUsername, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy++;
+        gbc.gridx = 0; gbc.gridy++;
         panel.add(new JLabel("Mật khẩu:"), gbc);
         txtPassword = new JPasswordField();
-        gbc.gridx = 1;
-        panel.add(txtPassword, gbc);
+        gbc.gridx = 1; panel.add(txtPassword, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy++;
+        gbc.gridx = 0; gbc.gridy++;
         btnLogin = new JButton("Đăng nhập");
         panel.add(btnLogin, gbc);
 
@@ -63,10 +55,7 @@ public class LoginForm extends JFrame {
 
         add(panel);
 
-        // Sự kiện nút đăng nhập
         btnLogin.addActionListener(evt -> btnLoginActionPerformed(evt));
-
-        // Sự kiện nút đăng ký
         btnRegister.addActionListener(evt -> btnRegisterActionPerformed(evt));
     }
 
@@ -80,12 +69,9 @@ public class LoginForm extends JFrame {
         }
 
         if (checkLogin(username, password)) {
-            // 🟢 Nếu đúng thì chuyển thẳng qua Dashboard (không thông báo)
             Dashboard dashboard = new Dashboard();
             dashboard.setVisible(true);
             dashboard.setLocationRelativeTo(null);
-
-            // 🟥 Đóng form đăng nhập
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu!", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
@@ -93,36 +79,34 @@ public class LoginForm extends JFrame {
     }
 
     private void btnRegisterActionPerformed(ActionEvent evt) {
-        // Mở form đăng ký
         RegisterForm registerForm = new RegisterForm();
         registerForm.setVisible(true);
         registerForm.setLocationRelativeTo(null);
-        this.dispose(); // ẩn form đăng nhập
+        this.dispose();
     }
 
-    // ✅ Kiểm tra tài khoản trong file accounts.txt
+    // ✅ Kiểm tra tài khoản trong MySQL
     private boolean checkLogin(String username, String password) {
-        File file = new File("accounts.txt");
-        if (!file.exists()) {
-            JOptionPane.showMessageDialog(this, "Chưa có tài khoản nào được đăng ký!");
-            return false;
+        String url = "jdbc:mysql://127.0.0.1:3306/filesharingsystem"; // 🔹 Thay bằng tên DB của bạn
+        String user = "root"; // 🔹 Tên user MySQL
+        String pass = "Nhom14@1234"; // 🔹 Mật khẩu MySQL
+
+        String sql = "SELECT * FROM user WHERE Username = ? AND PasswordHash = ?";
+
+        try (Connection conn = DriverManager.getConnection(url, user, pass);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password); // Nếu bạn dùng hash, cần mã hóa trước khi so sánh
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Có kết quả nghĩa là đăng nhập đúng
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi kết nối database: " + e.getMessage());
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    String savedUser = parts[0].trim();
-                    String savedPass = parts[1].trim();
-                    if (savedUser.equals(username) && savedPass.equals(password)) {
-                        return true;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return false;
     }
 

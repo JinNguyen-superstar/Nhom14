@@ -7,12 +7,19 @@ package Main.App.controllers;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class RegisterForm extends JFrame {
     private JTextField txtUsername, txtDepartment;
     private JPasswordField txtPassword, txtConfirm;
     private JButton btnRegister, btnBack;
+
+    // 🟢 Thông tin kết nối database
+    private final String DB_URL = "jdbc:mysql://127.0.0.1:3306/filesharingsystem"; // 🔹 Thay bằng tên DB thật
+    private final String DB_USER = "root"; // 🔹 Tài khoản MySQL
+    private final String DB_PASS = "Nhom14@1234"; // 🔹 Mật khẩu MySQL
 
     public RegisterForm() {
         setTitle("Đăng ký tài khoản mới");
@@ -22,7 +29,7 @@ public class RegisterForm extends JFrame {
         setResizable(false);
         initComponents();
     }
-
+    
     private void initComponents() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -85,9 +92,9 @@ public class RegisterForm extends JFrame {
         String username = txtUsername.getText().trim();
         String password = new String(txtPassword.getPassword()).trim();
         String confirm = new String(txtConfirm.getPassword()).trim();
-        String department = txtDepartment.getText().trim();
+        String departmentStr = txtDepartment.getText().trim();
 
-        if (username.isEmpty() || password.isEmpty() || confirm.isEmpty() || department.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || confirm.isEmpty() || departmentStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
             return;
         }
@@ -97,43 +104,50 @@ public class RegisterForm extends JFrame {
             return;
         }
 
-        // Kiểm tra trùng tên đăng nhập
-        File file = new File("accounts.txt");
+        int departmentID;
         try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
+            departmentID = Integer.parseInt(departmentStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Mã phòng ban phải là số!");
+            return;
+        }
 
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 1 && parts[0].equals(username)) {
+        // Gọi hàm đăng ký vào database
+        if (registerUser(username, password, departmentID)) {
+            JOptionPane.showMessageDialog(this, "Đăng ký thành công! Hãy đăng nhập để sử dụng.");
+            backToLogin();
+        }
+    }
+
+    private boolean registerUser(String username, String password, int departmentID) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
+            // Kiểm tra tên đăng nhập trùng
+            String checkSql = "SELECT * FROM user WHERE Username = ?";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setString(1, username);
+                ResultSet rs = checkStmt.executeQuery();
+                if (rs.next()) {
                     JOptionPane.showMessageDialog(this, "Tên đăng nhập đã tồn tại!");
-                    reader.close();
-                    return;
+                    return false;
                 }
             }
-            reader.close();
 
-            // Ghi tài khoản mới
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-            writer.write(username + "," + password + "," + department);
-            writer.newLine();
-            writer.close();
+            // Thêm tài khoản mới
+            String insertSql = "INSERT INTO user (Username, PasswordHash, DepartmentID, Role, CreatedAt) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                insertStmt.setString(1, username);
+                insertStmt.setString(2, password); // 🔸 Nếu dùng hash, mã hóa ở đây
+                insertStmt.setInt(3, departmentID);
+                insertStmt.setString(4, "User"); // Role mặc định
+                insertStmt.setString(5, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                insertStmt.executeUpdate();
+                return true;
+            }
 
-            JOptionPane.showMessageDialog(this, "Đăng ký thành công! Hãy đăng nhập để sử dụng.");
-
-            // 🟢 Chuyển về LoginForm sau khi đăng ký xong
-            this.dispose();
-            LoginForm loginForm = new LoginForm();
-            loginForm.setVisible(true);
-            loginForm.setLocationRelativeTo(null);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi ghi dữ liệu!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi database: " + e.getMessage());
         }
+        return false;
     }
 
     private void backToLogin() {
