@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import javax.swing.table.TableModel;
 
 /**
@@ -211,50 +212,66 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDowloadActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        // TODO add your handling code here:
-    // Lấy mã phòng ban từ ô txtmapb
-    String mapb = txtmapb.getText().trim();
+       try {
+        // Lấy mã phòng ban
+        String mapb = txtmapb.getText().trim();
+        if (mapb.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã phòng ban trước khi tải file!",
+                    "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    if (mapb.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập mã phòng ban trước khi tải file!");
-        return;
-    }
+        // Chọn file cần upload
+        JFileChooser chooser = new JFileChooser();
+        int result = chooser.showOpenDialog(this);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return; // Người dùng bấm cancel
+        }
 
-    // Mở hộp thoại chọn file
-    JFileChooser fileChooser = new JFileChooser();
-    fileChooser.setDialogTitle("Chọn file để tải lên");
-    int userSelection = fileChooser.showOpenDialog(this);
+        File selectedFile = chooser.getSelectedFile();
+        if (!selectedFile.exists()) {
+            JOptionPane.showMessageDialog(this, "File không tồn tại!");
+            return;
+        }
 
-    if (userSelection == JFileChooser.APPROVE_OPTION) {
-        File selectedFile = fileChooser.getSelectedFile();
-
-        // Tạo thư mục lưu trữ theo mã phòng ban (nếu chưa có)
+        // Tạo thư mục uploads/<maPB>
         File uploadDir = new File("uploads/" + mapb);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
 
-        // Đường dẫn đích
+        // Sao chép file vào thư mục uploads/<maPB>/
         File destFile = new File(uploadDir, selectedFile.getName());
+        Files.copy(selectedFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
-        try {
-            // Sao chép file vào thư mục lưu trữ
-            Files.copy(selectedFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        JOptionPane.showMessageDialog(this, "Tải file thành công vào: " + destFile.getPath());
 
-            // Thông báo thành công
-            JOptionPane.showMessageDialog(this, "Tải file thành công vào thư mục: " + uploadDir.getPath());
-
-            // Cập nhật danh sách file trên bảng
-            DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
-            model.addRow(new Object[]{selectedFile.getName(), mapb, destFile.getPath()});
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải file: " + e.getMessage());
+        // === GHI THÔNG TIN VÀO uploads/data.txt ===
+        File dataFile = new File("uploads/data.txt");
+        if (!dataFile.exists()) {
+            dataFile.getParentFile().mkdirs();
+            dataFile.createNewFile();
         }
+
+        // Ghi dữ liệu theo định dạng: maPB,relativePath
+        String relativePath = mapb + "/" + selectedFile.getName();
+        try (FileWriter fw = new FileWriter(dataFile, true)) {
+            fw.write(mapb + "," + relativePath + System.lineSeparator());
+        }
+
+        // Cập nhật lại bảng hiển thị
+        DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
+        model.addRow(new Object[]{selectedFile.getName(), (destFile.length() / 1024) + " KB", mapb});
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Lỗi khi tải file: " + e.getMessage(),
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnseekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnseekActionPerformed
+                                            
     String keyword = txtmapb.getText().trim();
 
     if (keyword.isEmpty()) {
@@ -280,17 +297,20 @@ public class Dashboard extends javax.swing.JFrame {
         while ((line = br.readLine()) != null) {
             String[] parts = line.split(",", 2);
             if (parts.length == 2) {
-                String maPB = parts[0];
-                String fileName = parts[1];
+                String maPB = parts[0].trim();
+                String relativePath = parts[1].trim(); // ví dụ "2/abc.pdf"
+
                 if (maPB.equalsIgnoreCase(keyword)) {
-                    File f = new File(uploadDir, fileName);
+                    File f = new File(uploadDir, relativePath); // uploads/2/abc.pdf
                     if (f.exists()) {
-                        model.addRow(new Object[]{fileName, (f.length() / 1024) + " KB", maPB});
+                        long kb = Math.max(1, f.length() / 1024);
+                        model.addRow(new Object[]{f.getName(), kb + " KB", maPB});
                     }
                 }
             }
         }
     } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Lỗi khi đọc dữ liệu: " + e.getMessage());
         e.printStackTrace();
     }
 
@@ -300,8 +320,9 @@ public class Dashboard extends javax.swing.JFrame {
                 "Kết quả tìm kiếm", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Cập nhật lại bảng hiển thị
     txt_list.setModel(model);
+
+
     }//GEN-LAST:event_btnseekActionPerformed
 
     private void btndeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeleteActionPerformed
