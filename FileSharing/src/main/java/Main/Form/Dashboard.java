@@ -8,8 +8,11 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import Main.App.controllers.LoginFrame;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -35,23 +38,19 @@ public class Dashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        list = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
         btnDowload = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
         btndelete = new javax.swing.JButton();
         btnClose = new javax.swing.JButton();
         btnLoginRegister = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtmapb = new javax.swing.JTextField();
+        btnseek = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txt_list = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        list.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(list);
 
         jLabel1.setText("Cloud");
 
@@ -70,8 +69,18 @@ public class Dashboard extends javax.swing.JFrame {
         });
 
         btndelete.setText("Delete");
+        btndelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeleteActionPerformed(evt);
+            }
+        });
 
         btnClose.setText("Close");
+        btnClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCloseActionPerformed(evt);
+            }
+        });
 
         btnLoginRegister.setText("Login/Register");
         btnLoginRegister.addActionListener(new java.awt.event.ActionListener() {
@@ -79,6 +88,28 @@ public class Dashboard extends javax.swing.JFrame {
                 btnLoginRegisterActionPerformed(evt);
             }
         });
+
+        jLabel2.setText("Nhập Mã phòng ban: ");
+
+        btnseek.setText("Tìm");
+        btnseek.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnseekActionPerformed(evt);
+            }
+        });
+
+        txt_list.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(txt_list);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -92,14 +123,19 @@ public class Dashboard extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnLoginRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtmapb, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnDowload, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
                             .addComponent(btnUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnClose, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btndelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(btndelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnseek, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(26, 26, 26))
         );
         layout.setVerticalGroup(
@@ -109,18 +145,23 @@ public class Dashboard extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                     .addComponent(btnLoginRegister))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtmapb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnseek))
+                .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnDowload, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btndelete, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(60, 60, 60))
         );
 
         pack();
@@ -134,38 +175,171 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoginRegisterActionPerformed
 
     private void btnDowloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDowloadActionPerformed
-        // TODO add your handling code here:
+    int selectedRow = txt_list.getSelectedRow(); // Lấy dòng được chọn
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn file cần tải xuống!");
+        return;
+    }
+
+    // Lấy tên file từ cột đầu tiên (cột 0)
+    String fileName = txt_list.getValueAt(selectedRow, 0).toString();
+
+    // File gốc trong thư mục uploads
+    File sourceFile = new File("uploads", fileName);
+    if (!sourceFile.exists()) {
+        JOptionPane.showMessageDialog(this, "File không tồn tại trong thư mục uploads!");
+        return;
+    }
+
+    // Mở hộp thoại chọn nơi lưu
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Chọn nơi lưu file");
+    fileChooser.setSelectedFile(new File(fileName));
+
+    int userSelection = fileChooser.showSaveDialog(this);
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        File destinationFile = fileChooser.getSelectedFile();
+
+        try (java.nio.channels.FileChannel sourceChannel = new java.io.FileInputStream(sourceFile).getChannel();
+             java.nio.channels.FileChannel destChannel = new java.io.FileOutputStream(destinationFile).getChannel()) {
+
+            destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+            JOptionPane.showMessageDialog(this, "Tải xuống thành công:\n" + destinationFile.getAbsolutePath());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải file xuống: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     }//GEN-LAST:event_btnDowloadActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
-        JFileChooser fileChooser = new JFileChooser();
-    fileChooser.setDialogTitle("Chọn file để tải lên");
-    int result = fileChooser.showOpenDialog(this);
+    // Lấy mã phòng ban từ ô txtmapb
+    String mapb = txtmapb.getText().trim();
 
-    if (result == JFileChooser.APPROVE_OPTION) {
+    if (mapb.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập mã phòng ban trước khi tải file!");
+        return;
+    }
+
+    // Mở hộp thoại chọn file
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Chọn file để tải lên");
+    int userSelection = fileChooser.showOpenDialog(this);
+
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
         File selectedFile = fileChooser.getSelectedFile();
 
-        // Tạo thư mục uploads nếu chưa có
-        File uploadDir = new File("uploads");
+        // Tạo thư mục lưu trữ theo mã phòng ban (nếu chưa có)
+        File uploadDir = new File("uploads/" + mapb);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
 
-        // Sao chép file đã chọn vào thư mục uploads
-        File destinationFile = new File(uploadDir, selectedFile.getName());
+        // Đường dẫn đích
+        File destFile = new File(uploadDir, selectedFile.getName());
+
         try {
-            Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            JOptionPane.showMessageDialog(this,
-                    "Tải file thành công!\n" + selectedFile.getName(),
-                    "Thành công", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Lỗi khi tải file: " + ex.getMessage(),
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            // Sao chép file vào thư mục lưu trữ
+            Files.copy(selectedFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            // Thông báo thành công
+            JOptionPane.showMessageDialog(this, "Tải file thành công vào thư mục: " + uploadDir.getPath());
+
+            // Cập nhật danh sách file trên bảng
+            DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
+            model.addRow(new Object[]{selectedFile.getName(), mapb, destFile.getPath()});
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải file: " + e.getMessage());
         }
     }
     }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnseekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnseekActionPerformed
+    String keyword = txtmapb.getText().trim(); // Lấy mã phòng ban nhập vào
+
+    File uploadDir = new File("uploads");
+    if (!uploadDir.exists()) {
+        JOptionPane.showMessageDialog(this,
+                "Chưa có thư mục uploads!",
+                "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    File[] files = uploadDir.listFiles();
+    if (files == null || files.length == 0) {
+        JOptionPane.showMessageDialog(this,
+                "Chưa có file nào để tìm!",
+                "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+
+    // Tạo danh sách kết quả (hiển thị tên + kích thước)
+    DefaultListModel<String> model = new DefaultListModel<>();
+
+    for (File f : files) {
+        // Kiểm tra file có chứa mã phòng ban hay không (không phân biệt hoa thường)
+        if (f.getName().toLowerCase().contains(keyword.toLowerCase())) {
+            model.addElement(f.getName() + " (" + (f.length() / 1024) + " KB)");
+        }
+    }
+
+    // Nếu không có kết quả
+    if (model.isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+                "Không tìm thấy file nào chứa mã: " + keyword,
+                "Kết quả", JOptionPane.INFORMATION_MESSAGE);
+        model.clear(); // Làm trống danh sách
+    }
+
+    // Gán model mới cho JList
+    txt_list.setModel((TableModel) model);
+    }//GEN-LAST:event_btnseekActionPerformed
+
+    private void btndeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeleteActionPerformed
+         int selectedRow = txt_list.getSelectedRow();
+
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn file cần xóa!");
+        return;
+    }
+
+    Object fileObj = txt_list.getValueAt(selectedRow, 2);
+    if (fileObj == null) {
+        JOptionPane.showMessageDialog(this, "Không tìm thấy đường dẫn file để xóa!");
+        return;
+    }
+
+    String filePath = fileObj.toString();
+    File fileToDelete = new File(filePath);
+
+    int confirm = JOptionPane.showConfirmDialog(this,
+            "Bạn có chắc muốn xóa file này?\n" + filePath,
+            "Xác nhận xóa",
+            JOptionPane.YES_NO_OPTION);
+
+    if (confirm == JOptionPane.YES_OPTION) {
+        if (fileToDelete.exists()) {
+            if (fileToDelete.delete()) {
+                DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
+                model.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this, "Đã xóa file thành công!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Không thể xóa file! Có thể file đang mở hoặc bị khóa.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "File không tồn tại, chỉ xóa khỏi danh sách!");
+            DefaultTableModel model = (DefaultTableModel) txt_list.getModel();
+            model.removeRow(selectedRow);
+        }
+    }
+    }//GEN-LAST:event_btndeleteActionPerformed
+
+    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
+        // TODO add your handling code here:
+         System.exit(0);
+    }//GEN-LAST:event_btnCloseActionPerformed
 
     /**
      * @param args the command line arguments
@@ -198,9 +372,12 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnLoginRegister;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btndelete;
+    private javax.swing.JButton btnseek;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<String> list;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable txt_list;
+    private javax.swing.JTextField txtmapb;
     // End of variables declaration//GEN-END:variables
 
     private void openFileChooser() {
