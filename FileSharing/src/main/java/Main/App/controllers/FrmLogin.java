@@ -61,6 +61,11 @@ public class FrmLogin extends javax.swing.JFrame {
 
         btn_Register.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btn_Register.setText("Đăng ký");
+        btn_Register.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_RegisterActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -111,6 +116,10 @@ public class FrmLogin extends javax.swing.JFrame {
     private void btn_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LoginActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btn_LoginActionPerformed
+
+    private void btn_RegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RegisterActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_RegisterActionPerformed
 
     /**
      * @param args the command line arguments
