@@ -42,7 +42,7 @@
                   </Group>
                   <Component id="txt_email" pref="275" max="32767" attributes="0"/>
                   <Component id="txt_tenDK" max="32767" attributes="0"/>
-                  <Component id="txt_mk" alignment="0" max="32767" attributes="0"/>
+                  <Component id="txt_mk" max="32767" attributes="0"/>
                   <Component id="jTextField1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
@@ -126,8 +126,6 @@
         <Property name="text" type="java.lang.String" value="M&#x1ead;t Kh&#x1ea9;u:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="txt_mk">
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -135,8 +133,6 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Nh&#x1ead;p l&#x1ea1;i m&#x1ead;t kh&#x1ea9;u:"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="jTextField1">
     </Component>
     <Component class="javax.swing.JButton" name="btn_Regis">
       <Properties>
@@ -159,6 +155,10 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLoginActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JPasswordField" name="txt_mk">
+    </Component>
+    <Component class="javax.swing.JPasswordField" name="jTextField1">
     </Component>
   </SubComponents>
 </Form>

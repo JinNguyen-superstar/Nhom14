@@ -8,8 +8,16 @@ package Main.App.controllers;
  *
  * @author quand
  */
+import Main.App.Database.MySQLConnection;
+//import Main.App.security.EncryptionUtil; // dùng để hash mật khẩu
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 public class FrmRegister extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmRegister.class.getName());
 
     /**
@@ -34,11 +42,11 @@ public class FrmRegister extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txt_email = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        txt_mk = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         btn_Regis = new javax.swing.JButton();
         btnLogin = new javax.swing.JButton();
+        txt_mk = new javax.swing.JPasswordField();
+        jTextField1 = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -134,12 +142,82 @@ public class FrmRegister extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
-        
+        this.dispose();
+        new FrmLogin().setVisible(true);
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btn_RegisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RegisActionPerformed
         // TODO add your handling code here:
+        String username = txt_tenDK.getText().trim();
+        String email = txt_email.getText().trim();
+         String pass   = new String(txt_mk.getPassword()).trim();
+    String retype = new String(jTextField1.getPassword()).trim();
+     if (username.isEmpty() || email.isEmpty() || pass.isEmpty() || retype.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
+    if (!isValidEmail(email)) {
+        JOptionPane.showMessageDialog(this, "Email không hợp lệ!");
+        return;
+    }
+    if (!pass.equals(retype)) {
+        JOptionPane.showMessageDialog(this, "Mật khẩu nhập lại không khớp!");
+        return;
+    }
+
+    // Ghi DB
+    try (Connection conn = MySQLConnection.getConnection()) {
+        if (existsUser(conn, username, email)) {
+            JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc Email đã tồn tại!");
+            return;
+        }
+        if (insertUser(conn, username, email, pass)) {
+            JOptionPane.showMessageDialog(this, "Đăng ký thành công! Vui lòng đăng nhập.");
+            this.dispose();
+            new FrmLogin().setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Không thể tạo tài khoản. Thử lại sau.");
+        }
+    } catch (SQLException ex) {
+        // nếu có UNIQUE KEY ở Username/Email sẽ rơi vào đây khi trùng
+        String msg = ex.getMessage();
+        if (msg != null && msg.toLowerCase().contains("duplicate")) {
+            JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc Email đã tồn tại!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Lỗi CSDL: " + ex.getMessage());
+        }
+        logger.log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Lỗi hệ thống: " + ex.getMessage());
+        logger.log(java.util.logging.Level.SEVERE, null, ex);
+    }
     }//GEN-LAST:event_btn_RegisActionPerformed
+
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[\\w._%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$");
+    }
+
+    private boolean existsUser(Connection conn, String username, String email) throws SQLException {
+        String sql = "SELECT 1 FROM user WHERE Username = ? OR Email = ? LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private boolean insertUser(Connection conn, String username, String email, String plainPassword) throws SQLException {
+        String sql = "INSERT INTO user (Username, PasswordHash, Email, Role, CreatedAt) VALUES (?,?,?,?, NOW())";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, plainPassword); // lưu mật khẩu dạng text để test
+            ps.setString(3, email);
+            ps.setString(4, "USER");        // role mặc định
+            return ps.executeUpdate() > 0;
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -174,9 +252,9 @@ public class FrmRegister extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField jTextField1;
     private javax.swing.JTextField txt_email;
-    private javax.swing.JTextField txt_mk;
+    private javax.swing.JPasswordField txt_mk;
     private javax.swing.JTextField txt_tenDK;
     // End of variables declaration//GEN-END:variables
 }
