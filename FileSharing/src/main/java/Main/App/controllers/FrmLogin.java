@@ -8,14 +8,14 @@ package Main.App.controllers;
  *
  * @author quand
  */
-public class JrmLogin extends javax.swing.JFrame {
+public class FrmLogin extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JrmLogin.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmLogin.class.getName());
 
     /**
      * Creates new form JrmLogin
      */
-    public JrmLogin() {
+    public FrmLogin() {
         initComponents();
     }
 
@@ -134,7 +134,7 @@ public class JrmLogin extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new JrmLogin().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new FrmLogin().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
