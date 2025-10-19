@@ -8,6 +8,13 @@ package Main.App.controllers;
  *
  * @author quand
  */
+import Main.App.Database.MySQLConnection;
+//import Main.App.security.EncryptionUtil; // dùng để hash mật khẩu
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 public class FrmLogin extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmLogin.class.getName());
@@ -33,9 +40,9 @@ public class FrmLogin extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txt_username = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        txt_password = new javax.swing.JTextField();
         btn_Login = new javax.swing.JButton();
         btn_Register = new javax.swing.JButton();
+        txt_password = new javax.swing.JPasswordField();
 
         jLabel2.setText("jLabel2");
 
@@ -47,6 +54,12 @@ public class FrmLogin extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Username:");
+
+        txt_username.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_usernameActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel4.setText("Mật Khẩu");
@@ -79,11 +92,11 @@ public class FrmLogin extends javax.swing.JFrame {
                 .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txt_username)
-                    .addComponent(txt_password, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(btn_Login)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, Short.MAX_VALUE)
-                        .addComponent(btn_Register, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btn_Register, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txt_password))
                 .addGap(24, 24, 24))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -115,11 +128,63 @@ public class FrmLogin extends javax.swing.JFrame {
 
     private void btn_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LoginActionPerformed
         // TODO add your handling code here:
+            // Lấy dữ liệu người dùng nhập
+        String username = txt_username.getText().trim();
+        String password = new String(txt_password.getPassword()).trim();
+
+        // Kiểm tra dữ liệu rỗng
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!");
+            return;
+        }
+
+        // Xử lý đăng nhập
+        try (Connection conn = MySQLConnection.getConnection()) {
+
+            // Kiểm tra tài khoản
+            if (checkLogin(conn, username, password)) {
+                JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
+
+                // Chuyển sang giao diện chính
+                this.dispose(); // đóng FrmLogin
+                FrmMain mainForm = new FrmMain(); 
+                mainForm.setVisible(true);
+                mainForm.setLocationRelativeTo(null); // căn giữa màn hình
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu!");
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi CSDL: " + ex.getMessage());
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi hệ thống: " + ex.getMessage());
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_btn_LoginActionPerformed
+    private boolean checkLogin(Connection conn, String username, String password) throws SQLException {
+        String sql = "SELECT * FROM user WHERE username = ? AND passwordHash = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // có kết quả → đúng tài khoản
+            }
+        }
+    }
+
 
     private void btn_RegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RegisterActionPerformed
         // TODO add your handling code here:
+        this.dispose();
+        new FrmRegister().setVisible(true);
     }//GEN-LAST:event_btn_RegisterActionPerformed
+
+    private void txt_usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_usernameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_usernameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -153,7 +218,7 @@ public class FrmLogin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField txt_password;
+    private javax.swing.JPasswordField txt_password;
     private javax.swing.JTextField txt_username;
     // End of variables declaration//GEN-END:variables
 }
