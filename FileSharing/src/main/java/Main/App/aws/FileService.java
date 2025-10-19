@@ -6,13 +6,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import main.app.repository.FileDataRepository;
 import Main.App.aws.S3Service;
+import java.sql.SQLException;
 
 public class FileService {
     private final FileDataRepository fileRepo;
     private final S3Service s3Service;
     private final ExecutorService executor;
 
-    public FileService() {
+    public FileService() throws SQLException {
         this.fileRepo = new FileDataRepository(); 
         this.s3Service = new S3Service("C:\\AWSkey\\credentials.txt");
         this.executor = Executors.newFixedThreadPool(5);

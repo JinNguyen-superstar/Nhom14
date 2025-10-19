@@ -9,7 +9,7 @@ import java.sql.*;
  * @author Asus
  */
 public class MySQLConnection {
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/filesharingsystem?zeroDateBehavior=CONVERT_TO_NULL";
+    private static final String URL = "jdbc:mysql://192.168.1.94:3306/filesharingsystem?zeroDateBehavior=CONVERT_TO_NULL";
     private static final String USER = "root";  
     private static final String PASS = "Nhom14@1234"; 
 
